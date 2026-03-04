@@ -1,40 +1,39 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Usuario } from './entities/usuario.entity';
+import { CreateUsuarioDto } from './dto/create-usuario.dto';
+import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 
 @Injectable()
 export class UsuariosService {
-  private usuarios = [
-    { id: 1, nombre: 'David', correo: 'david@gmail.com' },
-    { id: 2, nombre: 'Maria', correo: 'maria@gmail.com' },
-  ];
+  constructor(
+    @InjectRepository(Usuario)
+    private readonly usuarioRepository: Repository<Usuario>,
+  ) {}
 
-  findAll() {
-    return this.usuarios;
+  async crear(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    const usuario = this.usuarioRepository.create(createUsuarioDto);
+    return this.usuarioRepository.save(usuario);
   }
 
-  findOne(id: string) {
-    return this.usuarios.find((usuario) => usuario.id === +id);
+  async listar(): Promise<Usuario[]> {
+    return this.usuarioRepository.find();
   }
 
-  create(data: any) {
-    const nuevoUsuario = {
-      id: this.usuarios.length + 1,
-      ...data,
-    };
-    this.usuarios.push(nuevoUsuario);
-    return nuevoUsuario;
+  async obtenerPorId(id: number): Promise<Usuario | null> {
+    return this.usuarioRepository.findOneBy({ id });
   }
 
-  update(id: string, data: any) {
-    const usuario = this.findOne(id);
-    if (usuario) {
-      Object.assign(usuario, data);
-      return usuario;
-    }
-    return { mensaje: 'Usuario no encontrado' };
+  async actualizar(
+    id: number,
+    updateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario | null> {
+    await this.usuarioRepository.update(id, updateUsuarioDto);
+    return this.obtenerPorId(id);
   }
 
-  remove(id: string) {
-    this.usuarios = this.usuarios.filter((u) => u.id !== +id);
-    return { mensaje: 'Usuario eliminado' };
+  async eliminar(id: number): Promise<void> {
+    await this.usuarioRepository.delete(id);
   }
 }

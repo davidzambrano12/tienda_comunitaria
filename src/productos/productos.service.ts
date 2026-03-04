@@ -25,7 +25,10 @@ export class ProductosService {
     return this.productoRepository.findOneBy({ id });
   }
 
-  async actualizar(id: number, updateProductoDto: UpdateProductoDto): Promise<Producto | null> {
+  async actualizar(
+    id: number,
+    updateProductoDto: UpdateProductoDto,
+  ): Promise<Producto | null> {
     await this.productoRepository.update(id, updateProductoDto);
     return this.obtenerPorId(id);
   }
