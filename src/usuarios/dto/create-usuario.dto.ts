@@ -7,7 +7,7 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { RolUsuario } from '../entities/usuario.entity'; // 👈 IMPORTANTE
+import { RolUsuario } from '../entities/usuario.entity';
 
 export class CreateUsuarioDto {
   @IsString()
