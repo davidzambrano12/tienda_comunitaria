@@ -14,7 +14,7 @@ export class CreateProductoDto {
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
-  cantidad: number; // 👈 cambiado de stock a cantidad
+  cantidad: number; 
 
   @IsString()
   @IsOptional()
