@@ -16,4 +16,7 @@ export class Producto {
 
   @Column({ length: 50, nullable: true })
   categoria: string;
+
+
+
 }
