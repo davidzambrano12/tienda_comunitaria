@@ -9,6 +9,7 @@ import { ProveedoresModule } from './proveedores/proveedores.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ComprasModule } from './compras/compras.module';
+import { VentasModule } from './ventas/ventas.module';
 
 
 @Module({
@@ -17,7 +18,7 @@ import { ComprasModule } from './compras/compras.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProductosModule, UsuariosModule, ProductosModule, ProveedoresModule, AuthModule, DatabaseModule, ComprasModule],
+    ProductosModule, UsuariosModule, ProductosModule, ProveedoresModule, AuthModule, DatabaseModule, ComprasModule, VentasModule],
   controllers: [AppController],
   providers: [AppService],
 })
