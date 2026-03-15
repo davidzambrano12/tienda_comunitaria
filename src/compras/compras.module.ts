@@ -5,7 +5,7 @@ import { ComprasController } from './compras.controller';
 import { ComprasService } from './compras.service';
 
 import { Compra } from './entities/compra.entity';
-import { DetalleCompra } from './entities/detalle-compra.entity';
+import { DetalleCompra } from '../database/entities/detalle_compra.entity';
 
 import { Proveedor } from '../proveedores/entities/proveedor.entity';
 import { Producto } from 'src/productos/entities/producto.entity';

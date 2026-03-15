@@ -2,14 +2,13 @@ import {
   IsString,
   IsNotEmpty,
   IsEmail,
-  IsEnum,
-  IsOptional,
-  IsBoolean,
+  IsNumber,
+  IsPositive
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { RolUsuario } from '../entities/usuario.entity';
 
 export class CreateUsuarioDto {
+
   @IsString()
   @IsNotEmpty()
   nombre: string;
@@ -22,11 +21,14 @@ export class CreateUsuarioDto {
   @IsNotEmpty()
   contraseña: string;
 
-  @IsEnum(RolUsuario)
-  rol: RolUsuario;
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  id_rol: number;
 
-  @Type(() => Boolean)
-  @IsBoolean()
-  @IsOptional()
-  estado?: boolean;
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  id_estado: number;
+
 }

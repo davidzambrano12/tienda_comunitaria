@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Compra } from './entities/compra.entity';
-import { DetalleCompra } from './entities/detalle-compra.entity';
+import { DetalleCompra } from '../database/entities/detalle_compra.entity';
 import { Producto } from '../productos/entities/producto.entity';
 import { Proveedor } from '../proveedores/entities/proveedor.entity';
 
