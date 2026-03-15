@@ -1,7 +1,8 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional, IsPositive } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProductoDto {
+
   @IsString()
   @IsNotEmpty()
   nombre: string;
@@ -14,9 +15,11 @@ export class CreateProductoDto {
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
-  cantidad: number; 
+  cantidad: number;
 
-  @IsString()
-  @IsOptional()
-  categoria?: string;
+  @Type(() => Number)
+  @IsNumber()
+  @IsPositive()
+  id_categoria: number;
+
 }
