@@ -18,7 +18,7 @@ import { VentasModule } from './ventas/ventas.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProductosModule, UsuariosModule, ProductosModule, ProveedoresModule, AuthModule, DatabaseModule, ComprasModule, VentasModule],
+    ProductosModule, UsuariosModule, ProductosModule, ProveedoresModule, AuthModule, DatabaseModule, ComprasModule, VentasModule,],
   controllers: [AppController],
   providers: [AppService],
 })

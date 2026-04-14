@@ -8,18 +8,21 @@ export class DetalleVenta {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('int')
+  @Column({ type: 'int' })
   cantidad: number;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   subtotal: number;
 
-  @ManyToOne(() => Venta, venta => venta.detalles)
+  @ManyToOne(() => Venta, {
+    onDelete: 'CASCADE'
+  })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 
-  @ManyToOne(() => Producto)
+  @ManyToOne(() => Producto, {
+    onDelete: 'RESTRICT'
+  })
   @JoinColumn({ name: 'id_producto' })
   producto: Producto;
-
 }
