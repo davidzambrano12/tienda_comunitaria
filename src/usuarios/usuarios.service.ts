@@ -14,14 +14,29 @@ export class UsuariosService {
   ) {}
 
   async crear(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
+    const { id_rol, id_estado, contraseña, ...datos } = createUsuarioDto;
+
+    // Verificar si el correo ya existe para evitar el error 500 de la BD
+    const existe = await this.buscarPorCorreo(datos.correo);
+    if (existe) {
+      throw new Error('El correo electrónico ya está registrado');
+    }
+
     const salt = await bcrypt.genSalt();
-    const hashContraseña = await bcrypt.hash(createUsuarioDto.contraseña, salt);
+    const hashContraseña = await bcrypt.hash(contraseña, salt);
     
-    const usuario = this.usuarioRepository.create({
-      ...createUsuarioDto,
+    // Creamos la instancia manualmente para asegurar que TypeORM mapee las relaciones
+    const nuevoUsuario = this.usuarioRepository.create({
+      ...datos,
       contraseña: hashContraseña,
+      rol: { id: id_rol } as any,
+      estado: { id: id_estado } as any,
     });
-    return this.usuarioRepository.save(usuario);
+    
+    const usuarioGuardado = await this.usuarioRepository.save(nuevoUsuario);
+    
+    // Devolvemos el usuario buscando sus relaciones para que no salgan null
+    return this.buscarPorCorreo(usuarioGuardado.correo);
   }
 
   async buscarPorCorreo(correo: string): Promise<Usuario | null> {

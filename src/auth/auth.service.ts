@@ -31,7 +31,7 @@ export class AuthService {
     const payload = { 
       sub: user.id, 
       correo: user.correo, 
-      rol: user.rol.nombre 
+      rol: user.rol ? user.rol.nombre : 'SIN_ROL' 
     };
 
     return {
@@ -40,7 +40,7 @@ export class AuthService {
         id: user.id,
         nombre: user.nombre,
         correo: user.correo,
-        rol: user.rol.nombre
+        rol: user.rol ? user.rol.nombre : 'SIN_ROL'
       }
     };
   }
