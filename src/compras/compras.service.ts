@@ -26,7 +26,7 @@ export class ComprasService {
     private proveedorRepository: Repository<Proveedor>,
   ) {}
 
-  async create(createCompraDto: CreateCompraDto) {
+  async crear(createCompraDto: CreateCompraDto) {
 
     const proveedor = await this.proveedorRepository.findOne({
       where: { id: createCompraDto.id_proveedor }
@@ -41,7 +41,7 @@ export class ComprasService {
       total: createCompraDto.total
     });
 
-    await this.compraRepository.save(compra);
+    const compraGuardada = await this.compraRepository.save(compra);
 
     for (const item of createCompraDto.detalles) {
 
@@ -53,8 +53,12 @@ export class ComprasService {
         throw new Error('Producto no encontrado');
       }
 
+      // Actualizar stock del producto al comprar
+      producto.cantidad += item.cantidad;
+      await this.productoRepository.save(producto);
+
       const detalle = this.detalleRepository.create({
-        compra,
+        compra: compraGuardada,
         producto,
         cantidad: item.cantidad,
         subtotal: item.subtotal
@@ -64,8 +68,20 @@ export class ComprasService {
 
     }
 
-    return compra;
+    return this.obtenerPorId(compraGuardada.id);
+  }
 
+  async listar() {
+    return await this.compraRepository.find({
+      relations: ['proveedor', 'detalles', 'detalles.producto']
+    });
+  }
+
+  async obtenerPorId(id: number) {
+    return await this.compraRepository.findOne({
+      where: { id },
+      relations: ['proveedor', 'detalles', 'detalles.producto']
+    });
   }
 
 }

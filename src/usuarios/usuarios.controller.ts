@@ -8,7 +8,7 @@ import {
   Body,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -19,32 +19,43 @@ import { Role } from '../common/enums/role.enum';
 
 @ApiTags('usuarios')
 @ApiBearerAuth()
-@Controller('usuarios')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
+@Controller('usuarios')
+@ApiResponse({ status: 401, description: 'No autenticado. Token faltante o inválido.' })
+@ApiResponse({ status: 403, description: 'Prohibido. Se requiere el rol ADMIN.' })
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Crear un nuevo usuario (Solo ADMIN)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiResponse({ status: 201, description: 'Usuario creado exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos.' })
   crear(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuariosService.crear(createUsuarioDto);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar todos los usuarios (Solo ADMIN)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Listar todos los usuarios' })
+  @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada con éxito.' })
   listar() {
     return this.usuariosService.listar();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Obtener un usuario por ID (Solo ADMIN)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Obtener un usuario por ID' })
+  @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
+  @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
   obtenerPorId(@Param('id') id: number) {
     return this.usuariosService.obtenerPorId(id);
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Actualizar un usuario (Solo ADMIN)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Actualizar un usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario actualizado correctamente.' })
   actualizar(
     @Param('id') id: number,
     @Body() updateUsuarioDto: UpdateUsuarioDto,
@@ -53,7 +64,9 @@ export class UsuariosController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Eliminar un usuario (Solo ADMIN)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Eliminar un usuario' })
+  @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
   eliminar(@Param('id') id: number) {
     return this.usuariosService.eliminar(id);
   }

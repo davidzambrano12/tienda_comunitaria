@@ -13,7 +13,10 @@ CREATE TABLE roles (
 
 INSERT INTO roles (nombre) VALUES
 ('ADMIN'),
-('CAJERO');
+('CAJERO'),
+('INVENTARIO'),
+('SUPERVISOR'),
+('CONTADOR');
 
 -- Estados de usuario
 CREATE TABLE estados (

@@ -10,6 +10,11 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { ComprasModule } from './compras/compras.module';
 import { VentasModule } from './ventas/ventas.module';
+import { AuditoriaModule } from './auditoria/auditoria.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
+import { PagosModule } from './pagos/pagos.module';
+import { FacturacionModule } from './facturacion/facturacion.module';
+import { ReportesModule } from './reportes/reportes.module';
 
 
 @Module({
@@ -18,7 +23,19 @@ import { VentasModule } from './ventas/ventas.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProductosModule, UsuariosModule, ProductosModule, ProveedoresModule, AuthModule, DatabaseModule, ComprasModule, VentasModule,],
+    ProductosModule, 
+    UsuariosModule, 
+    ProveedoresModule, 
+    AuthModule, 
+    DatabaseModule, 
+    ComprasModule, 
+    VentasModule,
+    AuditoriaModule,
+    NotificacionesModule,
+    PagosModule,
+    FacturacionModule,
+    ReportesModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
