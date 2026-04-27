@@ -7,7 +7,7 @@ import { Role } from '../common/enums/role.enum';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('reportes')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @Controller('reportes')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiResponse({ status: 401, description: 'Token de acceso inválido o expirado.' })

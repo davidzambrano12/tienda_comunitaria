@@ -8,7 +8,7 @@ import { Role } from '../common/enums/role.enum';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @ApiTags('pagos')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @Controller('pagos')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @ApiResponse({ status: 401, description: 'No autenticado.' })

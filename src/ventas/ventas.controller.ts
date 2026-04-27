@@ -9,7 +9,7 @@ import { Role } from '../common/enums/role.enum';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('ventas')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @Controller('ventas')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class VentasController {

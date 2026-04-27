@@ -18,7 +18,7 @@ import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
 
 @ApiTags('productos')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('productos')
 @ApiResponse({ status: 401, description: 'No autenticado.' })

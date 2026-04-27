@@ -7,7 +7,7 @@ import { Role } from '../common/enums/role.enum';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 @ApiTags('facturacion')
-@ApiBearerAuth()
+@ApiBearerAuth('access-token')
 @Controller('facturacion')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class FacturacionController {
