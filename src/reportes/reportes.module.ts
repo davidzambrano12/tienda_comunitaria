@@ -1,12 +1,16 @@
+// src/reportes/reportes.module.ts
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Venta } from '../ventas/entities/venta.entity';
-import { DetalleVenta } from '../database/entities/detalle_venta.entity';
-import { ReportesService } from './reportes.service';
+import { HttpModule } from '@nestjs/axios';
 import { ReportesController } from './reportes.controller';
+import { ReportesService } from './reportes.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Venta, DetalleVenta])],
+  imports: [
+    HttpModule.register({
+      timeout: 15000,
+      maxRedirects: 3,
+    }),
+  ],
   controllers: [ReportesController],
   providers: [ReportesService],
 })
