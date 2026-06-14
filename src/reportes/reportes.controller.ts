@@ -15,7 +15,12 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('reportes')
 @ApiBearerAuth('access-token')
@@ -30,11 +35,23 @@ export class ReportesController {
    */
   @Get('pdf-diario')
   @Roles(Role.ADMIN, Role.SUPERVISOR, Role.CONTADOR)
-  @ApiOperation({ summary: 'Generar y descargar reporte PDF de ventas del día (Microservicio)' })
+  @ApiOperation({
+    summary:
+      'Generar y descargar reporte PDF de ventas del día (Microservicio)',
+  })
   @ApiResponse({ status: 200, description: 'Archivo PDF generado con éxito.' })
-  @ApiResponse({ status: 401, description: 'No autorizado - Requiere Token JWT.' })
-  @ApiResponse({ status: 403, description: 'Prohibido - No tienes el rol necesario.' })
-  @ApiResponse({ status: 503, description: 'El microservicio de reportes no está disponible.' })
+  @ApiResponse({
+    status: 401,
+    description: 'No autorizado - Requiere Token JWT.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Prohibido - No tienes el rol necesario.',
+  })
+  @ApiResponse({
+    status: 503,
+    description: 'El microservicio de reportes no está disponible.',
+  })
   async generarReporteDiario(@Res() res: Response) {
     const pdfBuffer = await this.reportesService.generarReporteDiarioPDF();
 

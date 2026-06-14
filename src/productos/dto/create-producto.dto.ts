@@ -3,13 +3,12 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProductoDto {
-
   @ApiProperty({ example: 'Arroz Diana 1kg' })
   @IsString()
   @IsNotEmpty()
   nombre: string;
 
-  @ApiProperty({ example: 4500.00 })
+  @ApiProperty({ example: 4500.0 })
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
@@ -26,5 +25,4 @@ export class CreateProductoDto {
   @IsNumber()
   @IsPositive()
   id_categoria: number;
-
 }

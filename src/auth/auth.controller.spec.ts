@@ -58,9 +58,6 @@ describe('AuthController', () => {
   });
 
   it('deberia retornar 400 si el body esta vacio', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({})
-      .expect(400);
+    await request(app.getHttpServer()).post('/auth/login').send({}).expect(400);
   });
-}); 
+});

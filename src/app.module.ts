@@ -16,19 +16,18 @@ import { PagosModule } from './pagos/pagos.module';
 import { FacturacionModule } from './facturacion/facturacion.module';
 import { ReportesModule } from './reportes/reportes.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
-    ProductosModule, 
-    UsuariosModule, 
-    ProveedoresModule, 
-    AuthModule, 
-    DatabaseModule, 
-    ComprasModule, 
+    ProductosModule,
+    UsuariosModule,
+    ProveedoresModule,
+    AuthModule,
+    DatabaseModule,
+    ComprasModule,
     VentasModule,
     AuditoriaModule,
     NotificacionesModule,
@@ -39,4 +38,4 @@ import { ReportesModule } from './reportes/reportes.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

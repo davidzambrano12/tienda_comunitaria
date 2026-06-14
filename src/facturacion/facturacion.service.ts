@@ -28,7 +28,7 @@ export class FacturacionService {
         cajero: venta.cajero.nombre,
         cliente: venta.cliente || 'Consumidor Final',
       },
-      items: venta.detalles.map(d => ({
+      items: venta.detalles.map((d) => ({
         producto: d.producto.nombre,
         cantidad: d.cantidad,
         precio_unitario: d.producto.precio,
@@ -37,11 +37,11 @@ export class FacturacionService {
       totales: {
         total: venta.total,
       },
-      pagos: venta.pagos.map(p => ({
+      pagos: venta.pagos.map((p) => ({
         metodo: p.metodo,
         monto: p.monto,
         fecha: p.fecha,
-      }))
+      })),
     };
   }
 }

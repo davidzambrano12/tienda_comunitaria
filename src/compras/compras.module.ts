@@ -12,12 +12,7 @@ import { Producto } from 'src/productos/entities/producto.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Compra,
-      DetalleCompra,
-      Producto,
-      Proveedor
-    ])
+    TypeOrmModule.forFeature([Compra, DetalleCompra, Producto, Proveedor]),
   ],
   controllers: [ComprasController],
   providers: [ComprasService],

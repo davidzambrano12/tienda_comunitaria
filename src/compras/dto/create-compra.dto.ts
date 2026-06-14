@@ -3,7 +3,6 @@ import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 class DetalleDto {
-
   @ApiProperty({ example: 1 })
   @IsNumber()
   id_producto: number;
@@ -12,19 +11,17 @@ class DetalleDto {
   @IsNumber()
   cantidad: number;
 
-  @ApiProperty({ example: 350000.00 })
+  @ApiProperty({ example: 350000.0 })
   @IsNumber()
   subtotal: number;
-
 }
 
 export class CreateCompraDto {
-
   @ApiProperty({ example: 1 })
   @IsNumber()
   id_proveedor: number;
 
-  @ApiProperty({ example: 350000.00 })
+  @ApiProperty({ example: 350000.0 })
   @IsNumber()
   total: number;
 
@@ -33,5 +30,4 @@ export class CreateCompraDto {
   @ValidateNested({ each: true })
   @Type(() => DetalleDto)
   detalles: DetalleDto[];
-
 }

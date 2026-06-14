@@ -1,11 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Usuario } from '../../usuarios/entities/usuario.entity';
 import { DetalleVenta } from '../../database/entities/detalle_venta.entity';
 import { Pago } from '../../pagos/entities/pago.entity';
 
 @Entity('ventas')
 export class Venta {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -27,5 +33,4 @@ export class Venta {
 
   @OneToMany(() => Pago, (pago) => pago.venta)
   pagos: Pago[];
-
 }

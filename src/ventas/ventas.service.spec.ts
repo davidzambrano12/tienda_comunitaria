@@ -93,7 +93,7 @@ describe('VentasService', () => {
         total: 50,
         detalles: [{ id_producto: 1, cantidad: 2, subtotal: 50 }],
       };
-      
+
       mockQueryRunner.manager.create.mockReturnValue({ id: 100 });
       mockQueryRunner.manager.save.mockResolvedValue({ id: 100 });
       mockQueryRunner.manager.findOne.mockResolvedValue({

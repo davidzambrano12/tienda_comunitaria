@@ -1,10 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Rol } from '../../database/entities/rol.entity';
 import { Estado } from '../../database/entities/estado.entity';
 
 @Entity('usuarios')
 export class Usuario {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -24,5 +29,4 @@ export class Usuario {
   @ManyToOne(() => Estado)
   @JoinColumn({ name: 'id_estado' })
   estado: Estado;
-
 }

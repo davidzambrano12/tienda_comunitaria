@@ -79,24 +79,41 @@ describe('PagosService', () => {
     jest.spyOn(ventaRepository, 'findOne').mockResolvedValue(null);
 
     await expect(
-      service.crear({ ventaId: 999, monto: 10, metodo: MetodoPago.EFECTIVO }, 1)
+      service.crear(
+        { ventaId: 999, monto: 10, metodo: MetodoPago.EFECTIVO },
+        1,
+      ),
     ).rejects.toThrow(NotFoundException);
   });
 
   it('debería lanzar BadRequestException si el monto excede el saldo', async () => {
     const ventaMock = { id: 5, total: 100, pagos: [{ monto: 80 }] };
-    
+
     jest.spyOn(ventaRepository, 'findOne').mockResolvedValue(ventaMock as any);
 
     await expect(
-      service.crear({ ventaId: 5, monto: 30, metodo: MetodoPago.EFECTIVO }, 1)
+      service.crear({ ventaId: 5, monto: 30, metodo: MetodoPago.EFECTIVO }, 1),
     ).rejects.toThrow(BadRequestException);
   });
 
   it('deberia retornar lista de pagos de una venta ordenados por fecha', async () => {
     const pagosMock: Pago[] = [
-      { id: 2, ventaId: 5, monto: 50, metodo: MetodoPago.TARJETA, fecha: new Date(), venta: null },
-      { id: 1, ventaId: 5, monto: 50, metodo: MetodoPago.EFECTIVO, fecha: new Date(), venta: null },
+      {
+        id: 2,
+        ventaId: 5,
+        monto: 50,
+        metodo: MetodoPago.TARJETA,
+        fecha: new Date(),
+        venta: null,
+      },
+      {
+        id: 1,
+        ventaId: 5,
+        monto: 50,
+        metodo: MetodoPago.EFECTIVO,
+        fecha: new Date(),
+        venta: null,
+      },
     ];
 
     jest.spyOn(pagoRepository, 'find').mockResolvedValue(pagosMock);

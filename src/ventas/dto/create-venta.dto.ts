@@ -1,4 +1,11 @@
-import { IsNumber, IsDateString, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsNumber,
+  IsDateString,
+  IsOptional,
+  IsString,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -11,7 +18,7 @@ export class DetalleVentaDto {
   @IsNumber()
   cantidad: number;
 
-  @ApiProperty({ example: 50.00 })
+  @ApiProperty({ example: 50.0 })
   @IsNumber()
   subtotal: number;
 }
@@ -22,7 +29,7 @@ export class CreateVentaDto {
   @IsDateString()
   fecha?: Date;
 
-  @ApiProperty({ example: 100.00 })
+  @ApiProperty({ example: 100.0 })
   @IsNumber()
   total: number;
 

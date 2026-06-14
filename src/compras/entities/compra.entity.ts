@@ -1,13 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Proveedor } from '../../proveedores/entities/proveedor.entity';
 import { OneToMany } from 'typeorm';
 import { DetalleCompra } from '../../database/entities/detalle_compra.entity';
 
-
 @Entity('compras')
-
 export class Compra {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,5 +26,4 @@ export class Compra {
 
   @OneToMany(() => DetalleCompra, (detalle) => detalle.compra)
   detalles: DetalleCompra[];
-
 }

@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('proveedores')
 export class Proveedor {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,5 +13,4 @@ export class Proveedor {
 
   @Column({ nullable: true })
   direccion: string;
-
 }

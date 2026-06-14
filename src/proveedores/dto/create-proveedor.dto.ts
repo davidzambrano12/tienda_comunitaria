@@ -2,7 +2,6 @@ import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateProveedorDto {
-
   @ApiProperty({ example: 'Distribuidora S.A.' })
   @IsString()
   nombre: string;
@@ -16,5 +15,4 @@ export class CreateProveedorDto {
   @IsOptional()
   @IsString()
   direccion?: string;
-
 }

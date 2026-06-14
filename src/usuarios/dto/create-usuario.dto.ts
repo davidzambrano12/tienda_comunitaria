@@ -3,13 +3,12 @@ import {
   IsNotEmpty,
   IsEmail,
   IsNumber,
-  IsPositive
+  IsPositive,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUsuarioDto {
-
   @ApiProperty({ example: 'Juan Pérez' })
   @IsString()
   @IsNotEmpty()
@@ -31,10 +30,12 @@ export class CreateUsuarioDto {
   @IsPositive()
   id_rol: number;
 
-  @ApiProperty({ example: 1, description: 'ID del Estado (1: Activo, 2: Inactivo)' })
+  @ApiProperty({
+    example: 1,
+    description: 'ID del Estado (1: Activo, 2: Inactivo)',
+  })
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
   id_estado: number;
-
 }

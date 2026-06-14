@@ -10,7 +10,13 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
@@ -31,13 +37,22 @@ export class ProductosController {
   @Roles(Role.ADMIN, Role.INVENTARIO)
   @ApiOperation({ summary: 'Crear un nuevo producto (ADMIN o INVENTARIO)' })
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
-  @ApiResponse({ status: 403, description: 'No tienes permisos para crear productos.' })
+  @ApiResponse({
+    status: 403,
+    description: 'No tienes permisos para crear productos.',
+  })
   crear(@Body() createProductoDto: CreateProductoDto) {
     return this.productosService.crear(createProductoDto);
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.INVENTARIO, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
+  @Roles(
+    Role.ADMIN,
+    Role.INVENTARIO,
+    Role.CAJERO,
+    Role.SUPERVISOR,
+    Role.CONTADOR,
+  )
   @ApiOperation({ summary: 'Listar todos los productos con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de productos obtenida.' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -50,7 +65,13 @@ export class ProductosController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.INVENTARIO, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
+  @Roles(
+    Role.ADMIN,
+    Role.INVENTARIO,
+    Role.CAJERO,
+    Role.SUPERVISOR,
+    Role.CONTADOR,
+  )
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiResponse({ status: 200, description: 'Producto encontrado.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })
@@ -62,7 +83,10 @@ export class ProductosController {
   @Roles(Role.ADMIN, Role.INVENTARIO)
   @ApiOperation({ summary: 'Actualizar un producto (ADMIN o INVENTARIO)' })
   @ApiResponse({ status: 200, description: 'Producto actualizado.' })
-  @ApiResponse({ status: 403, description: 'No tienes permisos para editar productos.' })
+  @ApiResponse({
+    status: 403,
+    description: 'No tienes permisos para editar productos.',
+  })
   actualizar(
     @Param('id') id: number,
     @Body() updateProductoDto: UpdateProductoDto,
@@ -74,7 +98,10 @@ export class ProductosController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Eliminar un producto (Solo ADMIN)' })
   @ApiResponse({ status: 200, description: 'Producto eliminado.' })
-  @ApiResponse({ status: 403, description: 'Solo el administrador puede eliminar productos.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Solo el administrador puede eliminar productos.',
+  })
   eliminar(@Param('id') id: number) {
     return this.productosService.eliminar(id);
   }

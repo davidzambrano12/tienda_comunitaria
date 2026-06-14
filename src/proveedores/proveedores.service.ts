@@ -8,7 +8,6 @@ import { UpdateProveedorDto } from './dto/update-proveedor.dto';
 
 @Injectable()
 export class ProveedoresService {
-
   constructor(
     @InjectRepository(Proveedor)
     private readonly proveedorRepository: Repository<Proveedor>,
@@ -34,7 +33,6 @@ export class ProveedoresService {
   }
 
   async update(id: number, updateProveedorDto: UpdateProveedorDto) {
-
     const proveedor = await this.findOne(id);
 
     Object.assign(proveedor, updateProveedorDto);
@@ -43,7 +41,6 @@ export class ProveedoresService {
   }
 
   async remove(id: number) {
-
     const proveedor = await this.findOne(id);
 
     return await this.proveedorRepository.remove(proveedor);

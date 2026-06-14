@@ -1,10 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Categoria } from '../../database/entities/categoria.entity';
 import { DetalleCompra } from '../../database/entities/detalle_compra.entity';
 
 @Entity('productos')
 export class Producto {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -17,11 +23,10 @@ export class Producto {
   @Column('int')
   cantidad: number;
 
-  @ManyToOne(() => Categoria, categoria => categoria.productos)
+  @ManyToOne(() => Categoria, (categoria) => categoria.productos)
   @JoinColumn({ name: 'id_categoria' })
   categoria: Categoria;
 
   @OneToMany(() => DetalleCompra, (detalle) => detalle.producto)
   detalles: DetalleCompra[];
-
 }

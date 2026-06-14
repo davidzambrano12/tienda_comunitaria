@@ -1,5 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { ProveedoresService } from './proveedores.service';
 import { CreateProveedorDto } from './dto/create-proveedor.dto';
 import { UpdateProveedorDto } from './dto/update-proveedor.dto';
@@ -12,11 +26,15 @@ import { Role } from '../common/enums/role.enum';
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('proveedores')
-@ApiResponse({ status: 401, description: 'No autenticado. Token faltante o inválido.' })
-@ApiResponse({ status: 403, description: 'Prohibido. Se requieren permisos insuficientes.' })
+@ApiResponse({
+  status: 401,
+  description: 'No autenticado. Token faltante o inválido.',
+})
+@ApiResponse({
+  status: 403,
+  description: 'Prohibido. Se requieren permisos insuficientes.',
+})
 export class ProveedoresController {
-
-
   constructor(private readonly proveedoresService: ProveedoresService) {}
 
   @Post()
@@ -31,7 +49,10 @@ export class ProveedoresController {
   @Get()
   @Roles(Role.ADMIN, Role.INVENTARIO, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Listar todos los proveedores' })
-  @ApiResponse({ status: 200, description: 'Lista de proveedores recuperada con éxito.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de proveedores recuperada con éxito.',
+  })
   findAll() {
     return this.proveedoresService.findAll();
   }
@@ -48,7 +69,10 @@ export class ProveedoresController {
   @Patch(':id')
   @Roles(Role.ADMIN, Role.INVENTARIO)
   @ApiOperation({ summary: 'Actualizar un proveedor' })
-  @ApiResponse({ status: 200, description: 'Proveedor actualizado correctamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Proveedor actualizado correctamente.',
+  })
   update(
     @Param('id') id: string,
     @Body() updateProveedorDto: UpdateProveedorDto,
@@ -59,7 +83,10 @@ export class ProveedoresController {
   @Delete(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Eliminar un proveedor' })
-  @ApiResponse({ status: 200, description: 'Proveedor eliminado exitosamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Proveedor eliminado exitosamente.',
+  })
   remove(@Param('id') id: string) {
     return this.proveedoresService.remove(+id);
   }

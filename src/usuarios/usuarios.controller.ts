@@ -10,7 +10,13 @@ import {
   Query,
   ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -23,8 +29,14 @@ import { Role } from '../common/enums/role.enum';
 @ApiBearerAuth('access-token')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('usuarios')
-@ApiResponse({ status: 401, description: 'No autenticado. Token faltante o inválido.' })
-@ApiResponse({ status: 403, description: 'Prohibido. Se requiere el rol ADMIN.' })
+@ApiResponse({
+  status: 401,
+  description: 'No autenticado. Token faltante o inválido.',
+})
+@ApiResponse({
+  status: 403,
+  description: 'Prohibido. Se requiere el rol ADMIN.',
+})
 export class UsuariosController {
   constructor(private readonly usuariosService: UsuariosService) {}
 
@@ -40,7 +52,10 @@ export class UsuariosController {
   @Get()
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Listar todos los usuarios con paginación' })
-  @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada con éxito.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de usuarios recuperada con éxito.',
+  })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   listar(
@@ -62,7 +77,10 @@ export class UsuariosController {
   @Patch(':id')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Actualizar un usuario' })
-  @ApiResponse({ status: 200, description: 'Usuario actualizado correctamente.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuario actualizado correctamente.',
+  })
   actualizar(
     @Param('id') id: number,
     @Body() updateUsuarioDto: UpdateUsuarioDto,

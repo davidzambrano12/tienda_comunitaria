@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  ConflictException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service';
@@ -18,8 +22,8 @@ export class AuthService {
 
   async validateUser(correo: string, pass: string): Promise<any> {
     const usuario = await this.usuariosService.buscarPorCorreo(correo);
-    
-    if (usuario && await bcrypt.compare(pass, usuario.contraseña)) {
+
+    if (usuario && (await bcrypt.compare(pass, usuario.contraseña))) {
       const { contraseña, ...result } = usuario;
       return result;
     }
@@ -28,20 +32,24 @@ export class AuthService {
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.correo, loginDto.contraseña);
-    
+
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const payload = { 
-      sub: user.id, 
-      correo: user.correo, 
-      rol: user.rol ? user.rol.nombre : 'SIN_ROL' 
+    const payload = {
+      sub: user.id,
+      correo: user.correo,
+      rol: user.rol ? user.rol.nombre : 'SIN_ROL',
     };
 
     // Log auditoría y notificación
     await this.auditoriaService.registrar(user.id, 'LOGIN', 'AUTH');
-    await this.notificacionesService.crear(`Usuario ${user.nombre} ha iniciado sesión`, 'INFO', user.id);
+    await this.notificacionesService.crear(
+      `Usuario ${user.nombre} ha iniciado sesión`,
+      'INFO',
+      user.id,
+    );
 
     return {
       access_token: this.jwtService.sign(payload),
@@ -49,8 +57,8 @@ export class AuthService {
         id: user.id,
         nombre: user.nombre,
         correo: user.correo,
-        rol: user.rol ? user.rol.nombre : 'SIN_ROL'
-      }
+        rol: user.rol ? user.rol.nombre : 'SIN_ROL',
+      },
     };
   }
 
@@ -64,8 +72,12 @@ export class AuthService {
         id_estado: registerDto.id_estado || 1, // Por defecto ACTIVO
       });
 
-      await this.notificacionesService.crear(`Nuevo usuario registrado: ${usuario.nombre}`, 'EVENTO', usuario.id);
-      
+      await this.notificacionesService.crear(
+        `Nuevo usuario registrado: ${usuario.nombre}`,
+        'EVENTO',
+        usuario.id,
+      );
+
       const { contraseña, ...result } = usuario;
       return result;
     } catch (error) {

@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Req, Query, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+  Req,
+  Query,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { VentasService } from './ventas.service';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { UpdateVentaDto } from './dto/update-venta.dto';
@@ -40,10 +52,7 @@ export class VentasController {
 
   @Put(':id')
   @Roles(Role.ADMIN)
-  actualizar(
-    @Param('id') id: number,
-    @Body() updateVentaDto: UpdateVentaDto,
-  ) {
+  actualizar(@Param('id') id: number, @Body() updateVentaDto: UpdateVentaDto) {
     return this.ventasService.actualizar(id, updateVentaDto);
   }
 

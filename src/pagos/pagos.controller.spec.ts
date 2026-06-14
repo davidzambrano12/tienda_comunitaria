@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import  request from 'supertest';
+import request from 'supertest';
 import { PagosController } from './pagos.controller';
 import { PagosService } from './pagos.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -61,9 +61,11 @@ describe('PagosController', () => {
           provide: PagosService,
           useValue: {
             crear: jest.fn(),
-            obtenerPorVenta: jest.fn().mockResolvedValue([
-              { id: 1, ventaId: 3, monto: 80, metodo: 'EFECTIVO' },
-            ]),
+            obtenerPorVenta: jest
+              .fn()
+              .mockResolvedValue([
+                { id: 1, ventaId: 3, monto: 80, metodo: 'EFECTIVO' },
+              ]),
           },
         },
       ],

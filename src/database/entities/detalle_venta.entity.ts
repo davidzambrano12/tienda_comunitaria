@@ -1,10 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Venta } from '../../ventas/entities/venta.entity';
 import { Producto } from '../../productos/entities/producto.entity';
 
 @Entity('detalle_ventas')
 export class DetalleVenta {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -15,13 +20,13 @@ export class DetalleVenta {
   subtotal: number;
 
   @ManyToOne(() => Venta, {
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 
   @ManyToOne(() => Producto, {
-    onDelete: 'RESTRICT'
+    onDelete: 'RESTRICT',
   })
   @JoinColumn({ name: 'id_producto' })
   producto: Producto;

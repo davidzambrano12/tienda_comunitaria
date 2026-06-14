@@ -6,13 +6,15 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Seguridad: Configuración de encabezados HTTP (Mitiga ataques XSS, Clickjacking, etc.)
   app.use(helmet());
 
   // Seguridad: Habilitar CORS para permitir peticiones controladas desde el frontend
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    origin: process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -29,7 +31,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Tienda Comunitaria API')
-    .setDescription('API para la gestión de productos, ventas, compras y usuarios')
+    .setDescription(
+      'API para la gestión de productos, ventas, compras y usuarios',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -50,4 +54,3 @@ async function bootstrap() {
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
-

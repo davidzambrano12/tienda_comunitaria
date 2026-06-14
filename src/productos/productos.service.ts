@@ -22,7 +22,7 @@ export class ProductosService {
     const [data, total] = await this.productoRepository.findAndCount({
       take: limit,
       skip: skip,
-      order: { nombre: 'ASC' }
+      order: { nombre: 'ASC' },
     });
 
     return {
@@ -30,8 +30,8 @@ export class ProductosService {
       meta: {
         total,
         page,
-        last_page: Math.ceil(total / limit)
-      }
+        last_page: Math.ceil(total / limit),
+      },
     };
   }
 

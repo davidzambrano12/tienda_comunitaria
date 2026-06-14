@@ -24,7 +24,7 @@ export class UsuariosService {
 
     const salt = await bcrypt.genSalt();
     const hashContraseña = await bcrypt.hash(contraseña, salt);
-    
+
     // Creamos la instancia manualmente para asegurar que TypeORM mapee las relaciones
     const nuevoUsuario = this.usuarioRepository.create({
       ...datos,
@@ -32,9 +32,9 @@ export class UsuariosService {
       rol: { id: id_rol } as any,
       estado: { id: id_estado } as any,
     });
-    
+
     const usuarioGuardado = await this.usuarioRepository.save(nuevoUsuario);
-    
+
     // Devolvemos el usuario buscando sus relaciones para que no salgan null
     return this.buscarPorCorreo(usuarioGuardado.correo);
   }
@@ -52,7 +52,7 @@ export class UsuariosService {
       relations: ['rol', 'estado'],
       take: limit,
       skip: skip,
-      order: { nombre: 'ASC' }
+      order: { nombre: 'ASC' },
     });
 
     return {
@@ -60,8 +60,8 @@ export class UsuariosService {
       meta: {
         total,
         page,
-        last_page: Math.ceil(total / limit)
-      }
+        last_page: Math.ceil(total / limit),
+      },
     };
   }
 

@@ -50,7 +50,9 @@ describe('AuthService', () => {
     usuariosService = module.get<UsuariosService>(UsuariosService);
     jwtService = module.get<JwtService>(JwtService);
     auditoriaService = module.get<AuditoriaService>(AuditoriaService);
-    notificacionesService = module.get<NotificacionesService>(NotificacionesService);
+    notificacionesService = module.get<NotificacionesService>(
+      NotificacionesService,
+    );
   });
 
   it('testDeberiaLanzarUnauthorizedSiCredencialesInvalidas', async () => {

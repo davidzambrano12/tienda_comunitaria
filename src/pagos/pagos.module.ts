@@ -7,10 +7,7 @@ import { PagosController } from './pagos.controller';
 import { AuditoriaModule } from '../auditoria/auditoria.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Pago, Venta]),
-    AuditoriaModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Pago, Venta]), AuditoriaModule],
   controllers: [PagosController],
   providers: [PagosService],
   exports: [PagosService],

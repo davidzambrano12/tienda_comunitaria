@@ -8,11 +8,9 @@ import { DetalleVenta } from '../database/entities/detalle_venta.entity';
 import { Producto } from '../productos/entities/producto.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Venta, DetalleVenta, Producto])  
-  ],
+  imports: [TypeOrmModule.forFeature([Venta, DetalleVenta, Producto])],
   controllers: [VentasController],
   providers: [VentasService],
-  exports: [VentasService]
+  exports: [VentasService],
 })
 export class VentasModule {}

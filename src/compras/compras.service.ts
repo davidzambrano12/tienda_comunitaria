@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 
@@ -11,7 +15,6 @@ import { CreateCompraDto } from './dto/create-compra.dto';
 
 @Injectable()
 export class ComprasService {
-
   constructor(
     @InjectRepository(Compra)
     private readonly compraRepository: Repository<Compra>,
@@ -31,7 +34,7 @@ export class ComprasService {
 
     try {
       const proveedor = await queryRunner.manager.findOne(Proveedor, {
-        where: { id: createCompraDto.id_proveedor }
+        where: { id: createCompraDto.id_proveedor },
       });
 
       if (!proveedor) {
@@ -40,7 +43,7 @@ export class ComprasService {
 
       const compra = queryRunner.manager.create(Compra, {
         proveedor,
-        total: createCompraDto.total
+        total: createCompraDto.total,
       });
 
       const compraGuardada = await queryRunner.manager.save(compra);
@@ -48,11 +51,13 @@ export class ComprasService {
       for (const item of createCompraDto.detalles) {
         const producto = await queryRunner.manager.findOne(Producto, {
           where: { id: item.id_producto },
-          lock: { mode: 'pessimistic_write' }
+          lock: { mode: 'pessimistic_write' },
         });
 
         if (!producto) {
-          throw new BadRequestException(`Producto con ID ${item.id_producto} no encontrado`);
+          throw new BadRequestException(
+            `Producto con ID ${item.id_producto} no encontrado`,
+          );
         }
 
         // Actualizar stock del producto al comprar
@@ -63,7 +68,7 @@ export class ComprasService {
           compra: compraGuardada,
           producto,
           cantidad: item.cantidad,
-          subtotal: item.subtotal
+          subtotal: item.subtotal,
         });
 
         await queryRunner.manager.save(detalle);
@@ -71,11 +76,12 @@ export class ComprasService {
 
       await queryRunner.commitTransaction();
       return this.obtenerPorId(compraGuardada.id);
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
       if (error instanceof BadRequestException) throw error;
-      throw new InternalServerErrorException('Error al registrar la compra: ' + error.message);
+      throw new InternalServerErrorException(
+        'Error al registrar la compra: ' + error.message,
+      );
     } finally {
       await queryRunner.release();
     }
@@ -95,17 +101,15 @@ export class ComprasService {
       meta: {
         total,
         page,
-        last_page: Math.ceil(total / limit)
-      }
+        last_page: Math.ceil(total / limit),
+      },
     };
   }
 
   async obtenerPorId(id: number) {
     return await this.compraRepository.findOne({
       where: { id },
-      relations: ['proveedor', 'detalles', 'detalles.producto']
+      relations: ['proveedor', 'detalles', 'detalles.producto'],
     });
   }
-
-
 }

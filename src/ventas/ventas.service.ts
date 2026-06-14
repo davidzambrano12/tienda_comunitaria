@@ -1,4 +1,8 @@
-import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 
@@ -12,7 +16,6 @@ import { Producto } from '../productos/entities/producto.entity';
 
 @Injectable()
 export class VentasService {
-
   constructor(
     @InjectRepository(Venta)
     private readonly ventaRepository: Repository<Venta>,
@@ -25,7 +28,10 @@ export class VentasService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async crear(createVentaDto: CreateVentaDto, usuarioId: number): Promise<Venta> {
+  async crear(
+    createVentaDto: CreateVentaDto,
+    usuarioId: number,
+  ): Promise<Venta> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -36,7 +42,7 @@ export class VentasService {
         fecha: createVentaDto.fecha || new Date(),
         total: createVentaDto.total,
         cliente: createVentaDto.cliente,
-        cajero: { id: usuarioId }
+        cajero: { id: usuarioId },
       });
 
       const guardada = await queryRunner.manager.save(venta);
@@ -44,17 +50,21 @@ export class VentasService {
       // 2. Procesar detalles y actualizar stock
       if (createVentaDto.detalles && createVentaDto.detalles.length > 0) {
         for (const item of createVentaDto.detalles) {
-          const producto = await queryRunner.manager.findOne(Producto, { 
+          const producto = await queryRunner.manager.findOne(Producto, {
             where: { id: item.id_producto },
-            lock: { mode: 'pessimistic_write' } // Bloqueo para evitar colisiones de stock
+            lock: { mode: 'pessimistic_write' }, // Bloqueo para evitar colisiones de stock
           });
-          
+
           if (!producto) {
-            throw new BadRequestException(`Producto con ID ${item.id_producto} no encontrado`);
+            throw new BadRequestException(
+              `Producto con ID ${item.id_producto} no encontrado`,
+            );
           }
 
           if (producto.cantidad < item.cantidad) {
-            throw new BadRequestException(`Stock insuficiente para el producto ${producto.nombre}. Disponible: ${producto.cantidad}`);
+            throw new BadRequestException(
+              `Stock insuficiente para el producto ${producto.nombre}. Disponible: ${producto.cantidad}`,
+            );
           }
 
           // Descontar stock
@@ -66,7 +76,7 @@ export class VentasService {
             venta: guardada,
             producto: producto,
             cantidad: item.cantidad,
-            subtotal: item.subtotal
+            subtotal: item.subtotal,
           });
           await queryRunner.manager.save(detalle);
         }
@@ -76,18 +86,31 @@ export class VentasService {
 
       // Acciones post-transacción (si fallan, la venta ya está segura)
       try {
-        await this.auditoriaService.registrar(usuarioId, 'CREAR_VENTA', 'VENTAS', { ventaId: guardada.id });
-        await this.notificacionesService.crear(`Nueva venta registrada por ${guardada.total} (ID: ${guardada.id})`, 'EVENTO', usuarioId);
+        await this.auditoriaService.registrar(
+          usuarioId,
+          'CREAR_VENTA',
+          'VENTAS',
+          { ventaId: guardada.id },
+        );
+        await this.notificacionesService.crear(
+          `Nueva venta registrada por ${guardada.total} (ID: ${guardada.id})`,
+          'EVENTO',
+          usuarioId,
+        );
       } catch (error) {
-        console.error('Error en servicios secundarios (Auditoria/Notificaciones):', error);
+        console.error(
+          'Error en servicios secundarios (Auditoria/Notificaciones):',
+          error,
+        );
       }
 
       return this.obtenerPorId(guardada.id);
-
     } catch (error) {
       await queryRunner.rollbackTransaction();
       if (error instanceof BadRequestException) throw error;
-      throw new InternalServerErrorException('Error al procesar la venta: ' + error.message);
+      throw new InternalServerErrorException(
+        'Error al procesar la venta: ' + error.message,
+      );
     } finally {
       await queryRunner.release();
     }
@@ -95,7 +118,7 @@ export class VentasService {
 
   async listar(page: number = 1, limit: number = 10) {
     const skip = (page - 1) * limit;
-    
+
     const [data, total] = await this.ventaRepository.findAndCount({
       relations: ['cajero', 'detalles', 'detalles.producto', 'pagos'],
       order: { fecha: 'DESC' },
@@ -109,14 +132,14 @@ export class VentasService {
         total,
         page,
         last_page: Math.ceil(total / limit),
-      }
+      },
     };
   }
 
   async obtenerPorId(id: number): Promise<Venta | null> {
     return this.ventaRepository.findOne({
       where: { id },
-      relations: ['cajero', 'detalles', 'detalles.producto', 'pagos']
+      relations: ['cajero', 'detalles', 'detalles.producto', 'pagos'],
     });
   }
 
@@ -124,13 +147,12 @@ export class VentasService {
     id: number,
     updateVentaDto: UpdateVentaDto,
   ): Promise<Venta | null> {
-
     await this.ventaRepository.update(id, {
       fecha: updateVentaDto.fecha,
       total: updateVentaDto.total,
       cajero: updateVentaDto.id_cajero
         ? { id: updateVentaDto.id_cajero }
-        : undefined
+        : undefined,
     });
 
     return this.obtenerPorId(id);
@@ -139,5 +161,4 @@ export class VentasService {
   async eliminar(id: number): Promise<void> {
     await this.ventaRepository.delete(id);
   }
-
 }
