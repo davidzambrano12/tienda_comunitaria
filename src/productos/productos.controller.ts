@@ -7,8 +7,10 @@ import {
   Param,
   Body,
   UseGuards,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
@@ -36,10 +38,15 @@ export class ProductosController {
 
   @Get()
   @Roles(Role.ADMIN, Role.INVENTARIO, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
-  @ApiOperation({ summary: 'Listar todos los productos' })
+  @ApiOperation({ summary: 'Listar todos los productos con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de productos obtenida.' })
-  listar() {
-    return this.productosService.listar();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  listar(
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.productosService.listar(page || 1, limit || 10);
   }
 
   @Get(':id')

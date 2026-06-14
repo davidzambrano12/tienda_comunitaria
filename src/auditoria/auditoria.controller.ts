@@ -1,10 +1,10 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
 import { AuditoriaService } from './auditoria.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('auditoria')
 @ApiBearerAuth('access-token')
@@ -17,9 +17,14 @@ export class AuditoriaController {
 
   @Get()
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Obtener logs de auditoría (Solo ADMIN)' })
+  @ApiOperation({ summary: 'Obtener logs de auditoría con paginación (Solo ADMIN)' })
   @ApiResponse({ status: 200, description: 'Lista de auditoría recuperada con éxito.' })
-  listar() {
-    return this.auditoriaService.listar();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  listar(
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.auditoriaService.listar(page || 1, limit || 20);
   }
 }

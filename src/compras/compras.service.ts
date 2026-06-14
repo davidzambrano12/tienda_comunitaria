@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 
 import { Compra } from './entities/compra.entity';
 import { DetalleCompra } from '../database/entities/detalle_compra.entity';
@@ -14,67 +14,90 @@ export class ComprasService {
 
   constructor(
     @InjectRepository(Compra)
-    private compraRepository: Repository<Compra>,
-
+    private readonly compraRepository: Repository<Compra>,
     @InjectRepository(DetalleCompra)
-    private detalleRepository: Repository<DetalleCompra>,
-
+    private readonly detalleRepository: Repository<DetalleCompra>,
     @InjectRepository(Producto)
-    private productoRepository: Repository<Producto>,
-
+    private readonly productoRepository: Repository<Producto>,
     @InjectRepository(Proveedor)
-    private proveedorRepository: Repository<Proveedor>,
+    private readonly proveedorRepository: Repository<Proveedor>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async crear(createCompraDto: CreateCompraDto) {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const proveedor = await this.proveedorRepository.findOne({
-      where: { id: createCompraDto.id_proveedor }
-    });
-
-    if (!proveedor) {
-      throw new Error('Proveedor no encontrado');
-    }
-
-    const compra = this.compraRepository.create({
-      proveedor,
-      total: createCompraDto.total
-    });
-
-    const compraGuardada = await this.compraRepository.save(compra);
-
-    for (const item of createCompraDto.detalles) {
-
-      const producto = await this.productoRepository.findOne({
-        where: { id: item.id_producto }
+    try {
+      const proveedor = await queryRunner.manager.findOne(Proveedor, {
+        where: { id: createCompraDto.id_proveedor }
       });
 
-      if (!producto) {
-        throw new Error('Producto no encontrado');
+      if (!proveedor) {
+        throw new BadRequestException('Proveedor no encontrado');
       }
 
-      // Actualizar stock del producto al comprar
-      producto.cantidad += item.cantidad;
-      await this.productoRepository.save(producto);
-
-      const detalle = this.detalleRepository.create({
-        compra: compraGuardada,
-        producto,
-        cantidad: item.cantidad,
-        subtotal: item.subtotal
+      const compra = queryRunner.manager.create(Compra, {
+        proveedor,
+        total: createCompraDto.total
       });
 
-      await this.detalleRepository.save(detalle);
+      const compraGuardada = await queryRunner.manager.save(compra);
 
+      for (const item of createCompraDto.detalles) {
+        const producto = await queryRunner.manager.findOne(Producto, {
+          where: { id: item.id_producto },
+          lock: { mode: 'pessimistic_write' }
+        });
+
+        if (!producto) {
+          throw new BadRequestException(`Producto con ID ${item.id_producto} no encontrado`);
+        }
+
+        // Actualizar stock del producto al comprar
+        producto.cantidad += item.cantidad;
+        await queryRunner.manager.save(producto);
+
+        const detalle = queryRunner.manager.create(DetalleCompra, {
+          compra: compraGuardada,
+          producto,
+          cantidad: item.cantidad,
+          subtotal: item.subtotal
+        });
+
+        await queryRunner.manager.save(detalle);
+      }
+
+      await queryRunner.commitTransaction();
+      return this.obtenerPorId(compraGuardada.id);
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Error al registrar la compra: ' + error.message);
+    } finally {
+      await queryRunner.release();
     }
-
-    return this.obtenerPorId(compraGuardada.id);
   }
 
-  async listar() {
-    return await this.compraRepository.find({
-      relations: ['proveedor', 'detalles', 'detalles.producto']
+  async listar(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await this.compraRepository.findAndCount({
+      relations: ['proveedor', 'detalles', 'detalles.producto'],
+      order: { fecha: 'DESC' },
+      take: limit,
+      skip: skip,
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit)
+      }
+    };
   }
 
   async obtenerPorId(id: number) {
@@ -83,5 +106,6 @@ export class ComprasService {
       relations: ['proveedor', 'detalles', 'detalles.producto']
     });
   }
+
 
 }

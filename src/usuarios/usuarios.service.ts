@@ -46,8 +46,23 @@ export class UsuariosService {
     });
   }
 
-  async listar(): Promise<Usuario[]> {
-    return this.usuarioRepository.find();
+  async listar(page: number = 1, limit: number = 10): Promise<any> {
+    const skip = (page - 1) * limit;
+    const [data, total] = await this.usuarioRepository.findAndCount({
+      relations: ['rol', 'estado'],
+      take: limit,
+      skip: skip,
+      order: { nombre: 'ASC' }
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit)
+      }
+    };
   }
 
   async obtenerPorId(id: number): Promise<Usuario | null> {

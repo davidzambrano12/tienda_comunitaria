@@ -1,5 +1,5 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Controller, Post, Body, Get, UseGuards, Query, ParseIntPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { ComprasService } from './compras.service';
 import { CreateCompraDto } from './dto/create-compra.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -27,10 +27,15 @@ export class ComprasController {
 
   @Get()
   @Roles(Role.ADMIN, Role.INVENTARIO, Role.SUPERVISOR, Role.CONTADOR)
-  @ApiOperation({ summary: 'Listar todas las compras' })
+  @ApiOperation({ summary: 'Listar todas las compras con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de compras recuperada.' })
-  listar() {
-    return this.comprasService.listar();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  listar(
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.comprasService.listar(page || 1, limit || 10);
   }
 
 }

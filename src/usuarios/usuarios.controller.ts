@@ -7,8 +7,10 @@ import {
   Param,
   Body,
   UseGuards,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { UsuariosService } from './usuarios.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
@@ -37,10 +39,15 @@ export class UsuariosController {
 
   @Get()
   @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Listar todos los usuarios' })
+  @ApiOperation({ summary: 'Listar todos los usuarios con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de usuarios recuperada con éxito.' })
-  listar() {
-    return this.usuariosService.listar();
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  listar(
+    @Query('page', new ParseIntPipe({ optional: true })) page?: number,
+    @Query('limit', new ParseIntPipe({ optional: true })) limit?: number,
+  ) {
+    return this.usuariosService.listar(page || 1, limit || 10);
   }
 
   @Get(':id')

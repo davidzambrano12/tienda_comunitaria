@@ -57,7 +57,7 @@ export class ReportesService {
     if (ventasDb.length === 0) {
       // Fallback: Si realmente no hay nada hoy, mostrar las últimas 5 para la demo
       const ultimasVentas = await this.ventaRepository.find({
-        take: 5,
+        take: 8,
         relations: ['cajero', 'detalles', 'detalles.producto'],
         order: { fecha: 'DESC' },
       });

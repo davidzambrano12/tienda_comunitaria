@@ -1,6 +1,6 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 
 import { Venta } from './entities/venta.entity';
 import { CreateVentaDto } from './dto/create-venta.dto';
@@ -22,58 +22,95 @@ export class VentasService {
     private readonly productoRepository: Repository<Producto>,
     private readonly auditoriaService: AuditoriaService,
     private readonly notificacionesService: NotificacionesService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async crear(createVentaDto: CreateVentaDto, usuarioId: number): Promise<Venta> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    // 1. Crear la cabecera de la venta
-    const venta = this.ventaRepository.create({
-      fecha: createVentaDto.fecha || new Date(),
-      total: createVentaDto.total,
-      cliente: createVentaDto.cliente,
-      cajero: { id: usuarioId }
-    });
+    try {
+      // 1. Crear la cabecera de la venta
+      const venta = queryRunner.manager.create(Venta, {
+        fecha: createVentaDto.fecha || new Date(),
+        total: createVentaDto.total,
+        cliente: createVentaDto.cliente,
+        cajero: { id: usuarioId }
+      });
 
-    const guardada = await this.ventaRepository.save(venta);
+      const guardada = await queryRunner.manager.save(venta);
 
-    // 2. Procesar detalles y actualizar stock
-    if (createVentaDto.detalles && createVentaDto.detalles.length > 0) {
-      for (const item of createVentaDto.detalles) {
-        const producto = await this.productoRepository.findOne({ where: { id: item.id_producto } });
-        
-        if (!producto) {
-          throw new BadRequestException(`Producto con ID ${item.id_producto} no encontrado`);
+      // 2. Procesar detalles y actualizar stock
+      if (createVentaDto.detalles && createVentaDto.detalles.length > 0) {
+        for (const item of createVentaDto.detalles) {
+          const producto = await queryRunner.manager.findOne(Producto, { 
+            where: { id: item.id_producto },
+            lock: { mode: 'pessimistic_write' } // Bloqueo para evitar colisiones de stock
+          });
+          
+          if (!producto) {
+            throw new BadRequestException(`Producto con ID ${item.id_producto} no encontrado`);
+          }
+
+          if (producto.cantidad < item.cantidad) {
+            throw new BadRequestException(`Stock insuficiente para el producto ${producto.nombre}. Disponible: ${producto.cantidad}`);
+          }
+
+          // Descontar stock
+          producto.cantidad -= item.cantidad;
+          await queryRunner.manager.save(producto);
+
+          // Crear detalle
+          const detalle = queryRunner.manager.create(DetalleVenta, {
+            venta: guardada,
+            producto: producto,
+            cantidad: item.cantidad,
+            subtotal: item.subtotal
+          });
+          await queryRunner.manager.save(detalle);
         }
-
-        if (producto.cantidad < item.cantidad) {
-          throw new BadRequestException(`Stock insuficiente para el producto ${producto.nombre}. Disponible: ${producto.cantidad}`);
-        }
-
-        // Descontar stock
-        producto.cantidad -= item.cantidad;
-        await this.productoRepository.save(producto);
-
-        // Crear detalle
-        const detalle = this.detalleRepository.create({
-          venta: guardada,
-          producto: producto,
-          cantidad: item.cantidad,
-          subtotal: item.subtotal
-        });
-        await this.detalleRepository.save(detalle);
       }
+
+      await queryRunner.commitTransaction();
+
+      // Acciones post-transacción (si fallan, la venta ya está segura)
+      try {
+        await this.auditoriaService.registrar(usuarioId, 'CREAR_VENTA', 'VENTAS', { ventaId: guardada.id });
+        await this.notificacionesService.crear(`Nueva venta registrada por ${guardada.total} (ID: ${guardada.id})`, 'EVENTO', usuarioId);
+      } catch (error) {
+        console.error('Error en servicios secundarios (Auditoria/Notificaciones):', error);
+      }
+
+      return this.obtenerPorId(guardada.id);
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      if (error instanceof BadRequestException) throw error;
+      throw new InternalServerErrorException('Error al procesar la venta: ' + error.message);
+    } finally {
+      await queryRunner.release();
     }
-
-    await this.auditoriaService.registrar(usuarioId, 'CREAR_VENTA', 'VENTAS', { ventaId: guardada.id });
-    await this.notificacionesService.crear(`Nueva venta registrada por ${guardada.total} (ID: ${guardada.id})`, 'EVENTO', usuarioId);
-
-    return this.obtenerPorId(guardada.id);
   }
 
-  async listar(): Promise<Venta[]> {
-    return this.ventaRepository.find({
-      relations: ['cajero', 'detalles', 'detalles.producto', 'pagos']
+  async listar(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    
+    const [data, total] = await this.ventaRepository.findAndCount({
+      relations: ['cajero', 'detalles', 'detalles.producto', 'pagos'],
+      order: { fecha: 'DESC' },
+      take: limit,
+      skip: skip,
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit),
+      }
+    };
   }
 
   async obtenerPorId(id: number): Promise<Venta | null> {

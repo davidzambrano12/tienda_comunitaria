@@ -17,8 +17,22 @@ export class ProductosService {
     return this.productoRepository.save(producto);
   }
 
-  async listar(): Promise<Producto[]> {
-    return this.productoRepository.find();
+  async listar(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await this.productoRepository.findAndCount({
+      take: limit,
+      skip: skip,
+      order: { nombre: 'ASC' }
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit)
+      }
+    };
   }
 
   async obtenerPorId(id: number): Promise<Producto | null> {

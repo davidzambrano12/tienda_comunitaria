@@ -20,10 +20,22 @@ export class AuditoriaService {
     return await this.auditoriaRepository.save(log);
   }
 
-  async listar() {
-    return await this.auditoriaRepository.find({
+  async listar(page: number = 1, limit: number = 20) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await this.auditoriaRepository.findAndCount({
       relations: ['usuario'],
       order: { fecha: 'DESC' },
+      take: limit,
+      skip: skip,
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        last_page: Math.ceil(total / limit)
+      }
+    };
   }
 }
