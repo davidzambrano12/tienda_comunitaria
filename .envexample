@@ -1,0 +1,15 @@
+NODE_ENV=development
+
+# Base de datos MySQL local
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=1234
+DB_NAME=tienda_comunitaria
+
+# API NestJS
+PORT=3000
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# Microservicio de reportes
+MS_REPORTES_URL=http://localhost:8001
