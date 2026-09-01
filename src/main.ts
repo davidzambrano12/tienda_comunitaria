@@ -10,11 +10,11 @@ async function bootstrap() {
   // Seguridad: Configuración de encabezados HTTP (Mitiga ataques XSS, Clickjacking, etc.)
   app.use(helmet());
 
-  // Seguridad: Habilitar CORS para permitir peticiones controladas desde el frontend
+  // Seguridad: Habilitar CORS para permitir peticiones controladas desde el frontend (React/Vite)
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',')
-      : '*',
+      : ['http://localhost:5173', 'http://localhost:3000'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -48,9 +48,12 @@ async function bootstrap() {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  // Swagger seguirá disponible en /api (o /api/v1/docs si prefieres, pero /api es estándar)
+  // Swagger seguirá disponible en /api
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  console.log(`🚀 Backend corriendo en http://localhost:${port}/api/v1`);
+  console.log(`📚 Swagger Docs disponible en http://localhost:${port}/api`);
 }
 bootstrap();
