@@ -25,19 +25,20 @@ export class FacturacionService {
       encabezado: {
         nro_factura: `FAC-${venta.id.toString().padStart(6, '0')}`,
         fecha: venta.fecha,
-        cajero: venta.cajero.nombre,
+        cajero: venta.cajero?.nombre || 'No asignado',
         cliente: venta.cliente || 'Consumidor Final',
       },
-      items: venta.detalles.map((d) => ({
-        producto: d.producto.nombre,
+      items: (venta.detalles || []).map((d) => ({
+        id_producto: d.producto?.id,
+        producto: d.producto?.nombre || 'Producto no disponible',
         cantidad: d.cantidad,
-        precio_unitario: d.producto.precio,
+        precio_unitario: d.producto?.precio || 0,
         subtotal: d.subtotal,
       })),
       totales: {
         total: venta.total,
       },
-      pagos: venta.pagos.map((p) => ({
+      pagos: (venta.pagos || []).map((p) => ({
         metodo: p.metodo,
         monto: p.monto,
         fecha: p.fecha,
