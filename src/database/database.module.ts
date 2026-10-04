@@ -1,10 +1,15 @@
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { Categoria } from './entities/categoria.entity';
+import { Estado } from './entities/estado.entity';
+import { Rol } from './entities/rol.entity';
+import { DatabaseSeedService } from './database-seed.service';
 
 @Global()
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Rol, Categoria, Estado]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -26,5 +31,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     }),
   ],
+  providers: [DatabaseSeedService],
 })
 export class DatabaseModule {}

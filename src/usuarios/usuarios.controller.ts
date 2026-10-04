@@ -70,7 +70,7 @@ export class UsuariosController {
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
-  obtenerPorId(@Param('id') id: number) {
+  obtenerPorId(@Param('id', ParseIntPipe) id: number) {
     return this.usuariosService.obtenerPorId(id);
   }
 
@@ -82,7 +82,7 @@ export class UsuariosController {
     description: 'Usuario actualizado correctamente.',
   })
   actualizar(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUsuarioDto: UpdateUsuarioDto,
   ) {
     return this.usuariosService.actualizar(id, updateUsuarioDto);
@@ -92,7 +92,7 @@ export class UsuariosController {
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
-  eliminar(@Param('id') id: number) {
+  eliminar(@Param('id', ParseIntPipe) id: number) {
     return this.usuariosService.eliminar(id);
   }
 }

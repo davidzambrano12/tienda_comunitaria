@@ -11,33 +11,17 @@ CREATE TABLE roles (
   nombre VARCHAR(50) NOT NULL
 );
 
-INSERT INTO roles (nombre) VALUES
-('ADMIN'),
-('CAJERO'),
-('INVENTARIO'),
-('SUPERVISOR'),
-('CONTADOR');
-
 -- Estados de usuario
 CREATE TABLE estados (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL
 );
 
-INSERT INTO estados (nombre) VALUES
-('ACTIVO'),
-('INACTIVO');
-
 -- Categorías de productos
 CREATE TABLE categorias (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL
 );
-
-INSERT INTO categorias (nombre) VALUES
-('Granos'),
-('Pasta'),
-('Salsas');
 
 -- =========================
 -- USUARIOS
