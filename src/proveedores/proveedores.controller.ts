@@ -38,7 +38,7 @@ export class ProveedoresController {
   constructor(private readonly proveedoresService: ProveedoresService) {}
 
   @Post()
-  @Roles(Role.ADMIN, Role.INVENTARIO)
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Crear un nuevo proveedor' })
   @ApiResponse({ status: 201, description: 'Proveedor creado exitosamente.' })
   create(@Body() createProveedorDto: CreateProveedorDto) {
@@ -47,7 +47,7 @@ export class ProveedoresController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.INVENTARIO, Role.SUPERVISOR, Role.CONTADOR)
+  @Roles(Role.ADMIN, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Listar todos los proveedores' })
   @ApiResponse({
     status: 200,
@@ -58,7 +58,7 @@ export class ProveedoresController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN, Role.INVENTARIO, Role.SUPERVISOR, Role.CONTADOR)
+  @Roles(Role.ADMIN, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Obtener un proveedor por ID' })
   @ApiResponse({ status: 200, description: 'Proveedor encontrado.' })
   @ApiResponse({ status: 404, description: 'Proveedor no encontrado.' })
@@ -67,7 +67,7 @@ export class ProveedoresController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN, Role.INVENTARIO)
+  @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Actualizar un proveedor' })
   @ApiResponse({
     status: 200,

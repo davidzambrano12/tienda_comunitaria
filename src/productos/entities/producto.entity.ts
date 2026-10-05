@@ -23,6 +23,9 @@ export class Producto {
   @Column('int')
   cantidad: number;
 
+  @Column({ name: 'id_categoria', nullable: true })
+  id_categoria: number; // 👈 Expone el ID numérico en la base de datos
+
   @ManyToOne(() => Categoria, (categoria) => categoria.productos)
   @JoinColumn({ name: 'id_categoria' })
   categoria: Categoria;

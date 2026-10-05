@@ -24,8 +24,8 @@ export class RegisterDto {
   contraseña: string;
 
   @ApiProperty({
-    example: 1,
-    description: 'ID del Rol (1 para ADMIN, 2 para CAJERO, etc.)',
+    example: 2,
+    description: 'ID del Rol (1: ADMIN, 2: CAJERO, 3: SUPERVISOR, 4: CONTADOR)',
     required: false,
   })
   @IsNumber()

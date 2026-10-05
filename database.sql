@@ -119,3 +119,22 @@ CREATE TABLE detalle_compras (
   FOREIGN KEY (id_compra) REFERENCES compras(id),
   FOREIGN KEY (id_producto) REFERENCES productos(id)
 );
+
+-- =========================
+-- DATOS INICIALES (SEEDS)
+-- =========================
+
+INSERT INTO roles (id, nombre) VALUES
+  (1, 'ADMIN'),
+  (2, 'CAJERO'),
+  (3, 'SUPERVISOR'),
+  (4, 'CONTADOR');
+
+INSERT INTO estados (id, nombre) VALUES
+  (1, 'ACTIVO'),
+  (2, 'INACTIVO');
+
+INSERT INTO categorias (id, nombre) VALUES
+  (1, 'Granos'),
+  (2, 'Pasta'),
+  (3, 'Salsas');

@@ -24,7 +24,10 @@ export class CreateUsuarioDto {
   @IsNotEmpty()
   contraseña: string;
 
-  @ApiProperty({ example: 1, description: 'ID del Rol (1: ADMIN, 2: CAJERO)' })
+  @ApiProperty({
+    example: 1,
+    description: 'ID del Rol (1: ADMIN, 2: CAJERO, 3: SUPERVISOR, 4: CONTADOR)',
+  })
   @Type(() => Number)
   @IsNumber()
   @IsPositive()

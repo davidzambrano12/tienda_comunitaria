@@ -30,9 +30,9 @@ export class ComprasController {
   constructor(private readonly comprasService: ComprasService) {}
 
   @Post()
-  @Roles(Role.ADMIN, Role.INVENTARIO)
+  @Roles(Role.ADMIN)
   @ApiOperation({
-    summary: 'Registrar una nueva compra a proveedores (ADMIN o INVENTARIO)',
+    summary: 'Registrar una nueva compra a proveedores (Solo ADMIN)',
   })
   @ApiResponse({ status: 201, description: 'Compra registrada con éxito.' })
   @ApiResponse({
@@ -44,7 +44,7 @@ export class ComprasController {
   }
 
   @Get()
-  @Roles(Role.ADMIN, Role.INVENTARIO, Role.SUPERVISOR, Role.CONTADOR)
+  @Roles(Role.ADMIN, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Listar todas las compras con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de compras recuperada.' })
   @ApiQuery({ name: 'page', required: false, type: Number })

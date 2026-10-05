@@ -23,7 +23,7 @@ export class DatabaseSeedService implements OnApplicationBootstrap {
   }
 
   private async ensureRoles(): Promise<void> {
-    const nombres = ['ADMIN', 'CAJERO', 'INVENTARIO', 'SUPERVISOR', 'CONTADOR'];
+    const nombres = ['ADMIN', 'CAJERO', 'SUPERVISOR', 'CONTADOR'];
 
     for (const nombre of nombres) {
       const existe = await this.rolRepository.findOneBy({ nombre });

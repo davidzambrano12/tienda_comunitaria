@@ -34,8 +34,8 @@ export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
 
   @Post()
-  @Roles(Role.ADMIN, Role.INVENTARIO)
-  @ApiOperation({ summary: 'Crear un nuevo producto (ADMIN o INVENTARIO)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Crear un nuevo producto (Solo ADMIN)' })
   @ApiResponse({ status: 201, description: 'Producto creado exitosamente.' })
   @ApiResponse({
     status: 403,
@@ -48,7 +48,6 @@ export class ProductosController {
   @Get()
   @Roles(
     Role.ADMIN,
-    Role.INVENTARIO,
     Role.CAJERO,
     Role.SUPERVISOR,
     Role.CONTADOR,
@@ -67,7 +66,6 @@ export class ProductosController {
   @Get(':id')
   @Roles(
     Role.ADMIN,
-    Role.INVENTARIO,
     Role.CAJERO,
     Role.SUPERVISOR,
     Role.CONTADOR,
@@ -80,8 +78,8 @@ export class ProductosController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN, Role.INVENTARIO)
-  @ApiOperation({ summary: 'Actualizar un producto (ADMIN o INVENTARIO)' })
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Actualizar un producto (Solo ADMIN)' })
   @ApiResponse({ status: 200, description: 'Producto actualizado.' })
   @ApiResponse({
     status: 403,

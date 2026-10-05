@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Producto } from './entities/producto.entity';
@@ -10,11 +10,17 @@ export class ProductosService {
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
-  ) {}
+  ) { }
 
   async crear(createProductoDto: CreateProductoDto): Promise<Producto> {
-    const producto = this.productoRepository.create(createProductoDto);
-    return this.productoRepository.save(producto);
+    const dto: any = createProductoDto;
+    const idCat = dto.id_categoria ?? dto.categoria_id ?? dto.categoriaId ?? (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
+
+    const producto = this.productoRepository.create({
+      ...createProductoDto,
+      categoria: idCat ? ({ id: Number(idCat) } as any) : undefined,
+    });
+    return await this.productoRepository.save(producto);
   }
 
   async listar(page: number = 1, limit: number = 10) {
@@ -23,6 +29,7 @@ export class ProductosService {
       take: limit,
       skip: skip,
       order: { nombre: 'ASC' },
+      relations: ['categoria'], // 👈 Trae siempre la categoría real desde MySQL
     });
 
     return {
@@ -36,18 +43,39 @@ export class ProductosService {
   }
 
   async obtenerPorId(id: number): Promise<Producto | null> {
-    return this.productoRepository.findOneBy({ id });
+    const producto = await this.productoRepository.findOne({
+      where: { id },
+      relations: ['categoria'], // 👈 Trae la categoría por ID
+    });
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+    return producto;
   }
 
   async actualizar(
     id: number,
     updateProductoDto: UpdateProductoDto,
   ): Promise<Producto | null> {
-    await this.productoRepository.update(id, updateProductoDto);
+    const dto: any = updateProductoDto;
+    const idCat = dto.id_categoria ?? dto.categoria_id ?? dto.categoriaId ?? (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
+
+    const producto = await this.productoRepository.preload({
+      id,
+      ...updateProductoDto,
+      categoria: idCat !== undefined ? ({ id: Number(idCat) } as any) : undefined,
+    });
+
+    if (!producto) {
+      throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+    }
+
+    await this.productoRepository.save(producto);
     return this.obtenerPorId(id);
   }
 
   async eliminar(id: number): Promise<void> {
-    await this.productoRepository.delete(id);
+    const producto = await this.obtenerPorId(id);
+    await this.productoRepository.remove(producto);
   }
 }
