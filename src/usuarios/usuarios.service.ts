@@ -15,7 +15,7 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-  ) {}
+  ) { }
 
   async crear(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
     const { id_rol, id_estado, contraseña, ...datos } = createUsuarioDto;
@@ -127,12 +127,29 @@ export class UsuariosService {
     return usuarioActualizado!;
   }
 
-  async eliminar(id: number): Promise<void> {
+  /**
+   * Elimina un usuario físicamente de la BD si no tiene historial vinculado.
+   * Si tiene ventas, notificaciones o registros asociados (Foreign Key),
+   * lo desactiva automáticamente pasándolo a estado Inactivo (id_estado = 2).
+   */
+  async eliminar(id: number): Promise<{ message: string; desactivado?: boolean }> {
     const usuario = await this.obtenerPorId(id);
     if (!usuario) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
-    await this.usuarioRepository.delete(id);
+
+    try {
+      // 1. Intentar eliminación física
+      await this.usuarioRepository.delete(id);
+      return { message: `Usuario #${id} eliminado exitosamente de la base de datos.` };
+    } catch (error) {
+      // 2. Si MySQL bloquea por clave foránea (ER_ROW_IS_REFERENCED_2), aplicar Soft Delete
+      usuario.estado = { id: 2 } as any; // 2 = Inactivo
+      await this.usuarioRepository.save(usuario);
+      return {
+        message: `El usuario #${id} tiene registros históricos vinculados (ventas/notificaciones), por lo que fue desactivado (Inactivo).`,
+        desactivado: true,
+      };
+    }
   }
 }
-

@@ -35,13 +35,13 @@ import { Role } from '../common/enums/role.enum';
 })
 @ApiResponse({
   status: 403,
-  description: 'Prohibido. Se requiere el rol ADMIN.',
+  description: 'Prohibido. Se requiere rol ADMIN o SUPERVISOR.',
 })
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) {}
+  constructor(private readonly usuariosService: UsuariosService) { }
 
   @Post()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERVISOR)
   @ApiOperation({ summary: 'Crear un nuevo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario creado exitosamente.' })
   @ApiResponse({ status: 400, description: 'Datos de entrada inválidos.' })
@@ -50,7 +50,7 @@ export class UsuariosController {
   }
 
   @Get()
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERVISOR)
   @ApiOperation({ summary: 'Listar todos los usuarios con paginación' })
   @ApiResponse({
     status: 200,
@@ -66,7 +66,7 @@ export class UsuariosController {
   }
 
   @Get(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERVISOR)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
   @ApiResponse({ status: 200, description: 'Usuario encontrado.' })
   @ApiResponse({ status: 404, description: 'Usuario no encontrado.' })
@@ -75,7 +75,7 @@ export class UsuariosController {
   }
 
   @Patch(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERVISOR)
   @ApiOperation({ summary: 'Actualizar un usuario' })
   @ApiResponse({
     status: 200,
@@ -89,7 +89,7 @@ export class UsuariosController {
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERVISOR)
   @ApiOperation({ summary: 'Eliminar un usuario' })
   @ApiResponse({ status: 200, description: 'Usuario eliminado exitosamente.' })
   eliminar(@Param('id', ParseIntPipe) id: number) {
