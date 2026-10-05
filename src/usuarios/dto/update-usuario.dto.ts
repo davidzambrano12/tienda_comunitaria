@@ -18,4 +18,3 @@ export class UpdateUsuarioDto extends PartialType(CreateUsuarioDto) {
   @IsString()
   contraseña?: string;
 }
-

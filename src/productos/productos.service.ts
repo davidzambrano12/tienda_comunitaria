@@ -18,11 +18,15 @@ export class ProductosService {
     private readonly productoRepository: Repository<Producto>,
     @InjectRepository(Categoria)
     private readonly categoriaRepository: Repository<Categoria>,
-  ) { }
+  ) {}
 
   async crear(createProductoDto: CreateProductoDto): Promise<Producto> {
     const dto: any = createProductoDto;
-    const idCat = dto.id_categoria ?? dto.categoria_id ?? dto.categoriaId ?? (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
+    const idCat =
+      dto.id_categoria ??
+      dto.categoria_id ??
+      dto.categoriaId ??
+      (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
 
     const producto = this.productoRepository.create({
       ...createProductoDto,
@@ -66,12 +70,17 @@ export class ProductosService {
     updateProductoDto: UpdateProductoDto,
   ): Promise<Producto | null> {
     const dto: any = updateProductoDto;
-    const idCat = dto.id_categoria ?? dto.categoria_id ?? dto.categoriaId ?? (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
+    const idCat =
+      dto.id_categoria ??
+      dto.categoria_id ??
+      dto.categoriaId ??
+      (typeof dto.categoria === 'object' ? dto.categoria?.id : dto.categoria);
 
     const producto = await this.productoRepository.preload({
       id,
       ...updateProductoDto,
-      categoria: idCat !== undefined ? ({ id: Number(idCat) } as any) : undefined,
+      categoria:
+        idCat !== undefined ? ({ id: Number(idCat) } as any) : undefined,
     });
 
     if (!producto) {
@@ -96,9 +105,7 @@ export class ProductosService {
       where: { nombre: nombreLimpio },
     });
     if (existente) {
-      throw new ConflictException(
-        `La categoría "${nombreLimpio}" ya existe.`,
-      );
+      throw new ConflictException(`La categoría "${nombreLimpio}" ya existe.`);
     }
     const nuevaCategoria = this.categoriaRepository.create({
       nombre: nombreLimpio,
@@ -112,4 +119,3 @@ export class ProductosService {
     });
   }
 }
-

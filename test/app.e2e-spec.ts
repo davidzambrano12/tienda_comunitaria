@@ -22,7 +22,9 @@ describe('AppController (e2e)', () => {
       .expect(200)
       .expect((res) => {
         expect(res.body.status).toBe('ok');
-        expect(res.body.mensaje).toBe('¡Conexión exitosa entre NestJS y React!');
+        expect(res.body.mensaje).toBe(
+          '¡Conexión exitosa entre NestJS y React!',
+        );
       });
   });
 });

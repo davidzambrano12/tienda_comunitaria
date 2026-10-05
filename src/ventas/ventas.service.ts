@@ -25,7 +25,7 @@ export class VentasService {
     private readonly auditoriaService: AuditoriaService,
     private readonly notificacionesService: NotificacionesService,
     private readonly dataSource: DataSource,
-  ) { }
+  ) {}
 
   /**
    * Registra una venta completa con transacción:
@@ -33,14 +33,19 @@ export class VentasService {
    * 2. Descuenta el stock en la tabla productos.
    * 3. Inserta la venta y sus detalles.
    */
-  async crear(createVentaDto: CreateVentaDto, usuarioId: number): Promise<Venta> {
+  async crear(
+    createVentaDto: CreateVentaDto,
+    usuarioId: number,
+  ): Promise<Venta> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       if (!createVentaDto.detalles || createVentaDto.detalles.length === 0) {
-        throw new BadRequestException('La venta debe incluir al menos un producto.');
+        throw new BadRequestException(
+          'La venta debe incluir al menos un producto.',
+        );
       }
 
       // 1. Crear la cabecera de la venta
@@ -48,7 +53,9 @@ export class VentasService {
         total: Number(createVentaDto.total),
         cliente: createVentaDto.cliente || 'Consumidor Final',
         cajero: { id: usuarioId } as any,
-        fecha: createVentaDto.fecha ? new Date(createVentaDto.fecha) : new Date(),
+        fecha: createVentaDto.fecha
+          ? new Date(createVentaDto.fecha)
+          : new Date(),
       });
 
       const ventaGuardada = await queryRunner.manager.save(Venta, venta);
@@ -60,7 +67,9 @@ export class VentasService {
         });
 
         if (!producto) {
-          throw new NotFoundException(`Producto con ID ${item.id_producto} no encontrado.`);
+          throw new NotFoundException(
+            `Producto con ID ${item.id_producto} no encontrado.`,
+          );
         }
 
         if (producto.cantidad < item.cantidad) {
@@ -78,7 +87,9 @@ export class VentasService {
           venta: { id: ventaGuardada.id } as any,
           producto: { id: item.id_producto } as any,
           cantidad: item.cantidad,
-          subtotal: Number(item.subtotal || item.cantidad * Number(producto.precio)),
+          subtotal: Number(
+            item.subtotal || item.cantidad * Number(producto.precio),
+          ),
         });
 
         await queryRunner.manager.save(DetalleVenta, detalle);
@@ -100,7 +111,9 @@ export class VentasService {
           'EVENTO',
           usuarioId,
         );
-      } catch (e) {}
+      } catch (e) {
+        // Ignorar fallo secundario en auditoría/notificaciones para no romper la venta
+      }
 
       return await this.obtenerPorId(ventaGuardada.id);
     } catch (error) {
@@ -154,4 +167,3 @@ export class VentasService {
     await this.ventaRepository.remove(venta);
   }
 }
-

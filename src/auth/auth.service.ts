@@ -4,6 +4,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { randomUUID } from 'crypto';
 import * as bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service';
 import { LoginDto } from './dto/login.dto';
@@ -46,10 +47,20 @@ export class AuthService {
       );
     }
 
+    // 1. Generar nuevo ID de sesión único
+    const sessionId = randomUUID();
+
+    // 2. Guardar en la base de datos MySQL (reemplazando cualquier sesión anterior)
+    await this.usuariosService.actualizarSessionId(user.id, sessionId);
+
+    // 3. Incluir el sessionId dentro del payload del token JWT
     const payload = {
       sub: user.id,
       correo: user.correo,
+      email: user.correo,
       rol: user.rol ? user.rol.nombre : 'SIN_ROL',
+      id_rol: user.rol?.id,
+      sessionId: sessionId,
     };
 
     // Log auditoría y notificación
@@ -66,7 +77,10 @@ export class AuthService {
         id: user.id,
         nombre: user.nombre,
         correo: user.correo,
+        email: user.correo,
         rol: user.rol ? user.rol.nombre : 'SIN_ROL',
+        id_rol: user.rol?.id,
+        sessionId: sessionId,
       },
     };
   }

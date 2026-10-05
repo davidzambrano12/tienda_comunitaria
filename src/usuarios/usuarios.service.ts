@@ -15,7 +15,7 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-  ) { }
+  ) {}
 
   async crear(createUsuarioDto: CreateUsuarioDto): Promise<Usuario> {
     const { id_rol, id_estado, contraseña, ...datos } = createUsuarioDto;
@@ -41,7 +41,7 @@ export class UsuariosService {
 
     // Devolvemos el usuario buscando sus relaciones para que no salgan null
     const usuarioCompleto = await this.obtenerPorId(usuarioGuardado.id);
-    return usuarioCompleto!;
+    return usuarioCompleto;
   }
 
   async buscarPorCorreo(correo: string): Promise<Usuario | null> {
@@ -124,7 +124,7 @@ export class UsuariosService {
     await this.usuarioRepository.save(usuario);
 
     const usuarioActualizado = await this.obtenerPorId(id);
-    return usuarioActualizado!;
+    return usuarioActualizado;
   }
 
   /**
@@ -132,7 +132,9 @@ export class UsuariosService {
    * Si tiene ventas, notificaciones o registros asociados (Foreign Key),
    * lo desactiva automáticamente pasándolo a estado Inactivo (id_estado = 2).
    */
-  async eliminar(id: number): Promise<{ message: string; desactivado?: boolean }> {
+  async eliminar(
+    id: number,
+  ): Promise<{ message: string; desactivado?: boolean }> {
     const usuario = await this.obtenerPorId(id);
     if (!usuario) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
@@ -156,7 +158,9 @@ export class UsuariosService {
     try {
       // 1. Intentar eliminación física
       await this.usuarioRepository.delete(id);
-      return { message: `Usuario #${id} eliminado exitosamente de la base de datos.` };
+      return {
+        message: `Usuario #${id} eliminado exitosamente de la base de datos.`,
+      };
     } catch (error: any) {
       // 2. Si MySQL bloquea por clave foránea (ER_ROW_IS_REFERENCED_2 / errno 1451), aplicar Soft Delete
       const esErrorClaveForanea =
@@ -185,5 +189,9 @@ export class UsuariosService {
         desactivado: true,
       };
     }
+  }
+
+  async actualizarSessionId(id: number, sessionId: string): Promise<void> {
+    await this.usuarioRepository.update(id, { currentSessionId: sessionId });
   }
 }

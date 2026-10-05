@@ -68,12 +68,7 @@ export class ProductosController {
   }
 
   @Get()
-  @Roles(
-    Role.ADMIN,
-    Role.CAJERO,
-    Role.SUPERVISOR,
-    Role.CONTADOR,
-  )
+  @Roles(Role.ADMIN, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Listar todos los productos con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de productos obtenida.' })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -86,12 +81,7 @@ export class ProductosController {
   }
 
   @Get(':id')
-  @Roles(
-    Role.ADMIN,
-    Role.CAJERO,
-    Role.SUPERVISOR,
-    Role.CONTADOR,
-  )
+  @Roles(Role.ADMIN, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
   @ApiOperation({ summary: 'Obtener un producto por ID' })
   @ApiResponse({ status: 200, description: 'Producto encontrado.' })
   @ApiResponse({ status: 404, description: 'Producto no encontrado.' })

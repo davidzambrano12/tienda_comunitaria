@@ -18,14 +18,20 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Role } from '../common/enums/role.enum';
-import { ApiTags, ApiBearerAuth, ApiQuery, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('ventas')
 @ApiBearerAuth('access-token')
 @Controller('ventas')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class VentasController {
-  constructor(private readonly ventasService: VentasService) { }
+  constructor(private readonly ventasService: VentasService) {}
 
   @Post()
   @Roles(Role.CAJERO, Role.ADMIN)

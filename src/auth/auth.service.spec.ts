@@ -23,6 +23,7 @@ describe('AuthService', () => {
           useValue: {
             buscarPorCorreo: jest.fn(),
             crear: jest.fn(),
+            actualizarSessionId: jest.fn().mockResolvedValue(undefined),
           },
         },
         {

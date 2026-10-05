@@ -38,7 +38,7 @@ import { Role } from '../common/enums/role.enum';
   description: 'Prohibido. Se requiere rol ADMIN o SUPERVISOR.',
 })
 export class UsuariosController {
-  constructor(private readonly usuariosService: UsuariosService) { }
+  constructor(private readonly usuariosService: UsuariosService) {}
 
   @Post()
   @Roles(Role.ADMIN, Role.SUPERVISOR)

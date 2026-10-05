@@ -22,6 +22,9 @@ export class Usuario {
   @Column({ length: 255 })
   contraseña: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  currentSessionId: string | null;
+
   @ManyToOne(() => Rol)
   @JoinColumn({ name: 'id_rol' })
   rol: Rol;
