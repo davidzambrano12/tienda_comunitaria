@@ -37,6 +37,15 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
+    if (
+      user.estado &&
+      (user.estado.nombre === 'INACTIVO' || user.estado.id === 2)
+    ) {
+      throw new UnauthorizedException(
+        'El usuario se encuentra inactivo. Comuníquese con el administrador.',
+      );
+    }
+
     const payload = {
       sub: user.id,
       correo: user.correo,

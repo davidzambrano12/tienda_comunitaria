@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Producto } from './entities/producto.entity';
+import { Categoria } from '../database/entities/categoria.entity';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 
@@ -10,6 +16,8 @@ export class ProductosService {
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
+    @InjectRepository(Categoria)
+    private readonly categoriaRepository: Repository<Categoria>,
   ) { }
 
   async crear(createProductoDto: CreateProductoDto): Promise<Producto> {
@@ -78,4 +86,30 @@ export class ProductosService {
     const producto = await this.obtenerPorId(id);
     await this.productoRepository.remove(producto);
   }
+
+  async crearCategoria(dto: { nombre: string }): Promise<Categoria> {
+    if (!dto?.nombre || !dto.nombre.trim()) {
+      throw new BadRequestException('El nombre de la categoría es obligatorio');
+    }
+    const nombreLimpio = dto.nombre.trim();
+    const existente = await this.categoriaRepository.findOne({
+      where: { nombre: nombreLimpio },
+    });
+    if (existente) {
+      throw new ConflictException(
+        `La categoría "${nombreLimpio}" ya existe.`,
+      );
+    }
+    const nuevaCategoria = this.categoriaRepository.create({
+      nombre: nombreLimpio,
+    });
+    return await this.categoriaRepository.save(nuevaCategoria);
+  }
+
+  async listarCategorias(): Promise<Categoria[]> {
+    return await this.categoriaRepository.find({
+      order: { nombre: 'ASC' },
+    });
+  }
 }
+

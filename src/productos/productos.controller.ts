@@ -23,7 +23,7 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../common/guards/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Role } from '../common/enums/role.enum';
+import { Role, Role as Rol } from '../common/enums/role.enum';
 
 @ApiTags('productos')
 @ApiBearerAuth('access-token')
@@ -32,6 +32,28 @@ import { Role } from '../common/enums/role.enum';
 @ApiResponse({ status: 401, description: 'No autenticado.' })
 export class ProductosController {
   constructor(private readonly productosService: ProductosService) {}
+
+  @Post('categorias')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Rol.ADMIN, Rol.SUPERVISOR)
+  @ApiOperation({ summary: 'Crear una nueva categoría (ADMIN o SUPERVISOR)' })
+  @ApiResponse({ status: 201, description: 'Categoría creada exitosamente.' })
+  @ApiResponse({ status: 400, description: 'Datos de entrada inválidos.' })
+  @ApiResponse({
+    status: 403,
+    description: 'No tienes permisos para crear categorías.',
+  })
+  async crearCategoria(@Body() dto: { nombre: string }) {
+    return this.productosService.crearCategoria(dto);
+  }
+
+  @Get('categorias')
+  @Roles(Role.ADMIN, Role.CAJERO, Role.SUPERVISOR, Role.CONTADOR)
+  @ApiOperation({ summary: 'Listar todas las categorías disponibles' })
+  @ApiResponse({ status: 200, description: 'Lista de categorías obtenida.' })
+  async listarCategorias() {
+    return this.productosService.listarCategorias();
+  }
 
   @Post()
   @Roles(Role.ADMIN)

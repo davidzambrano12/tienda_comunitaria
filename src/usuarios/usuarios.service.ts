@@ -138,16 +138,50 @@ export class UsuariosService {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }
 
+    // Proteger al único administrador activo
+    if (usuario.rol?.nombre === 'ADMIN') {
+      const adminsActivos = await this.usuarioRepository.count({
+        where: {
+          rol: { nombre: 'ADMIN' },
+          estado: { id: 1 },
+        },
+      });
+      if (adminsActivos <= 1) {
+        throw new ConflictException(
+          'No es posible eliminar o desactivar al único administrador activo del sistema.',
+        );
+      }
+    }
+
     try {
       // 1. Intentar eliminación física
       await this.usuarioRepository.delete(id);
       return { message: `Usuario #${id} eliminado exitosamente de la base de datos.` };
-    } catch (error) {
-      // 2. Si MySQL bloquea por clave foránea (ER_ROW_IS_REFERENCED_2), aplicar Soft Delete
+    } catch (error: any) {
+      // 2. Si MySQL bloquea por clave foránea (ER_ROW_IS_REFERENCED_2 / errno 1451), aplicar Soft Delete
+      const esErrorClaveForanea =
+        error?.code === 'ER_ROW_IS_REFERENCED_2' ||
+        error?.errno === 1451 ||
+        error?.message?.includes('foreign key constraint');
+
+      if (!esErrorClaveForanea) {
+        throw error;
+      }
+
+      if (
+        usuario.estado &&
+        (usuario.estado.id === 2 || usuario.estado.nombre === 'INACTIVO')
+      ) {
+        return {
+          message: `El usuario #${id} ya se encuentra inactivo y no puede eliminarse físicamente porque tiene registros históricos vinculados.`,
+          desactivado: true,
+        };
+      }
+
       usuario.estado = { id: 2 } as any; // 2 = Inactivo
       await this.usuarioRepository.save(usuario);
       return {
-        message: `El usuario #${id} tiene registros históricos vinculados (ventas/notificaciones), por lo que fue desactivado (Inactivo).`,
+        message: `El usuario #${id} tiene registros históricos vinculados (ventas/auditoría/notificaciones), por lo que fue desactivado (Inactivo).`,
         desactivado: true,
       };
     }
